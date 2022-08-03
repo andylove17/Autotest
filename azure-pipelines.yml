@@ -2,50 +2,64 @@
 # Create and test a Python package on multiple Python versions.
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
-trigger:
-- master
+
+resources:
+  - repo: self
+    clean: true
+
+variables:
+  - group: PAT for API
+
 jobs:
-
-- job:  'Test'
-  pool:
-    vmImage: windows-2019
-  strategy:
-    matrix:
-      Python37:
-        python.version: '3.7'
-    maxParallel:  1
-
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: x64
-    displayName: 'Use Python $(python.version)'
-
-  - script: |
-      python -m pip install --upgrade pip
-      pip install versiontools
-      pip freeze > requirements.txt
-      pip install -r requirements.txt
-    displayName: 'Install dependencies'
-  # - script: |
-  #     pip install pytest pytest-azurepipelines
-  #     pytest
-  #   displayName: 'pytest'
-
-  - script: |
-      pip install robotframework  robotframework-seleniumlibrary
-      npm install chromedriver
-      npm install geckodriver
-      npm install msedgedriver
-    displayName: 'Install Dependencies'
-    
-  - powershell: robot -d Results -x outputxunit.xml -v BROWSER:firefox TestCases.robot
-    displayName: 'Run Robot Scripts'
-
-  - task: PublishTestResults@2
-    displayName:  'Publish Test Results output.xml'
-    condition:  succeededOrFailed()
-    inputs:
-      testResultsFiles: outputxunit.xml
-      searchFolder: 'D:\a\1\s\Results\'
+  - job: Phase_1
+    timeoutInMinutes: 25
+    displayName: Run Instrumented Tests and publish results
+    condition: succeeded()
+    pool:
+      vmImage: 'macOS-10.14'
+    steps:
+      - task: CacheBeta@0
+        displayName: 'Caching System Images for AVD'
+        inputs:
+          key: 'AVD_IMAGES_PIXEL_28'
+          path: '$(ANDROID_HOME)/system-images'
+          cacheHitVar: 'AVD_IMAGES_RESTORED'
+        continueOnError: true
+        condition: succeededOrFailed()
+      - bash: |
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install 'system-images;android-28;google_apis;x86'
+        displayName: 'Download and install emulator image'
+        condition: ne(variables.AVD_IMAGES_RESTORED, 'true')
+      - bash: |
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n android_emulator -k 'system-images;android-28;google_apis;x86' -d 17 --force
+          echo "Emulator created successfully $(ANDROID_HOME/emulator/emulator -list-avds), launching it"
+          nohup $ANDROID_HOME/emulator/emulator -avd android_emulator -skin 1080x1920 -no-snapshot -no-audio -no-boot-anim -accel auto -gpu auto -qemu -lcd-density 420 > /dev/null 2>&1 &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+          $ANDROID_HOME/platform-tools/adb devices
+          echo "Emulator started"
+        displayName: 'Create and start emulator'
+      - bash: |
+          ./gradlew connectedDebugAndroidTest --console=plain  --stacktrace
+          ./gradlew --stop
+        displayName: 'Run Instrumented Tests'
+        continueOnError: true
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results'
+        inputs:
+          testResultsFiles: '**/outputs/androidTest-results/**/TEST*.xml'
+          failTaskOnFailedTests: true
+          testRunTitle: 'Test results'
+        condition: succeededOrFailed()
+      - task: UsePythonVersion@0
+        displayName: 'Use Python 3.x'
+        condition: succeededOrFailed()
+      - bash: 'pip install requests'
+        displayName: 'Install Python dependencies'
+        condition: succeededOrFailed()
+      - task: PythonScript@0
+        displayName: 'Upload screenshots'
+        continueOnError: true
+        condition: failed()
+        inputs:
+          scriptPath: './ci-cd-scripts/uiTestUploadScreenshot.sh'
+          arguments: '$(System.TeamProject) $(azure.api.pat) $(Build.BuildUri) yourOrganizationName'

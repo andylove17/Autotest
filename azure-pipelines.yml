@@ -13,17 +13,16 @@ variables:
 jobs:
   - job: Phase_1
     timeoutInMinutes: 25
-    displayName: Run Instrumented Tests and publish results
+    displayName: Run Robot Tests and publish results
     condition: succeeded()
     pool:
-      vmImage: 'macOS-10.14'
+      vmImage: 'macOS-10.15'
     steps:
       - task: NodeTool@0
       - bash: |
           'npm install -g appium'
           'appium -v'
         displayName: 'install appium_server'
-
       - powershell: Start-Process appium -PassThru 4723
         displayName: 'start appium process'
       - task: CacheBeta@0

@@ -7,9 +7,6 @@ resources:
   - repo: self
     clean: true
 
-variables:
-  - group: PAT for API
-
 jobs:
   - job: Phase_1
     timeoutInMinutes: 25

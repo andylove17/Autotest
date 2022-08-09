@@ -18,6 +18,14 @@ jobs:
     pool:
       vmImage: 'macOS-10.15'
     steps:
+      - task: Gradle@2
+        inputs:
+          workingDirectory: ''
+          gradleWrapperFile: 'gradlew'
+          gradleOptions: '-Xmx3072m'
+          publishJUnitResults: false
+          testResultsFiles: '**/TEST-*.xml'
+          tasks: 'assembleDebug'
       - task: NodeTool@0
       - bash: |
           'npm install -g appium'

@@ -6,7 +6,7 @@ Library     AppiumLibrary
 *** Variables ***
 ${ANDROID_PLATFORM_NAME}            Android
 ${ANDROID_AUTOMATION_NAME}          UIAutomator2
-${ANDROID_AUTOMATION_VERSION}       %{ANDROID_AUTOMATION_VERSION=10}
+${ANDROID_AUTOMATION_VERSION}       %{ANDROID_AUTOMATION_VERSION=12}
 ${ANDROID_APP}                      ${CURDIR}/test_project/vointy.apk
 
 

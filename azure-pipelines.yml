@@ -13,16 +13,18 @@ jobs:
     displayName: Run Robot Tests and publish results
     condition: succeeded()
     pool:
-      vmImage: 'macOS-10.15'
+      vmImage: 'macOS-11'
     steps:
       - task: Gradle@2
         inputs:
-          workingDirectory: ''
+          workingDirectory: '$(system.defaultWorkingDirectory)'
           gradleWrapperFile: 'gradlew'
           gradleOptions: '-Xmx3072m'
           publishJUnitResults: false
           testResultsFiles: '**/TEST-*.xml'
-          tasks: 'assembleDebug'
+          tasks: |
+            'assembleDebug' 
+            'build --stacktrace --info'
       - task: NodeTool@0
       - bash: |
           'npm install -g appium'

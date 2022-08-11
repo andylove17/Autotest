@@ -17,8 +17,8 @@ jobs:
     steps:
       - task: Gradle@2
         inputs:
-          workingDirectory: 'Android/app'
-          gradleWrapperFile: 'gradlew'
+          workingDirectory: 'Android/gradle'
+          gradleWrapperFile: 'wrapper'
           gradleOptions: '-Xmx3072m'
           publishJUnitResults: false
           testResultsFiles: '**/TEST-*.xml'

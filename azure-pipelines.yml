@@ -23,7 +23,7 @@ jobs:
           publishJUnitResults: false
           testResultsFiles: '**/TEST-*.xml'
           tasks: |
-            'assembleDebug' 
+            '$(Parameters.tasks)'
             'build --stacktrace --info'
       - task: NodeTool@0
       - bash: |

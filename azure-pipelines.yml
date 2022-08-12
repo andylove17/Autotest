@@ -13,8 +13,13 @@ jobs:
     displayName: Run Robot Tests and publish results
     condition: succeeded()
     pool:
-      vmImage: 'macOS-11'
+      vmImage: 'macOS-latest'
     steps:
+     - task: JavaToolInstaller@0
+      inputs:
+        versionSpec: '11'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
       - task: Gradle@2
         inputs:
           workingDirectory: ''

@@ -20,16 +20,15 @@ jobs:
           versionSpec: '11'
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
+      - task: aloisdeniel.flutter.flutter-install.FlutterInstall@0
       - task: Gradle@2
         inputs:
-          workingDirectory: ''
-          gradleWrapperFile: '$(Parameters.wrapperScript)'
+          workingDirectory: 'Android/app'
+          gradleWrapperFile: 'gradle.build'
           gradleOptions: '-Xmx3072m'
           publishJUnitResults: false
           testResultsFiles: '**/TEST-*.xml'
-          tasks: |
-            '$(Parameters.tasks)'
-            'build --stacktrace --info'
+          tasks: 'build --stacktrace --info'
       - task: NodeTool@0
       - bash: |
           'npm install -g appium'

@@ -20,7 +20,9 @@ jobs:
           versionSpec: '11'
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
-      - task: aloisdeniel.flutter.flutter-install.FlutterInstall@0
+      - task: FlutterInstall@0
+        displayName: "Install Flutter SDK"
+      - task: FlutterBuild@0
       - task: Gradle@2
         inputs:
           workingDirectory: 'Android/app'

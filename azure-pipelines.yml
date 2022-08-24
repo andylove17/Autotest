@@ -31,6 +31,7 @@ jobs:
       - task: FlutterBuild@0
         inputs:
           target: apk
+          projectDirectory: ''
       - task: NodeTool@0
       - bash: |
           'npm install -g appium'

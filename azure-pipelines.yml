@@ -62,7 +62,7 @@ jobs:
         ####copy.apk file to target robotframework's folder.
       - task: CopyFiles@2
         inputs:
-          
+
 
       - task: UsePythonVersion@0
         inputs: 
@@ -80,4 +80,4 @@ jobs:
         displayName: 'Publish Test Results'
         continueOnError: true
         inputs:
-          testResultsFiles: outputxunit.xml
+          testResultsFiles: outputx.xml

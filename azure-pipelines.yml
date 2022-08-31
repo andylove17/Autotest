@@ -59,11 +59,11 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           echo "Emulator started"
         displayName: 'Create and start emulator'
-      - bash: |
-          ./gradlew connectedDebugAndroidTest --console=plain  --stacktrace
-          ./gradlew --stop
-        displayName: 'Run Instrumented Tests'
-        continueOnError: true
+        ####copy.apk file to target robotframework's folder.
+      - task: CopyFiles@2
+        inputs:
+          
+
       - task: UsePythonVersion@0
         inputs: 
           versionSpec: '$(python.version)'
@@ -72,7 +72,7 @@ jobs:
         displayName: 'Install dependencies'
       - powershell: |
           Write-Host "Robot Framework tests"
-          robot -x 'outputxunit.xml' -t 'Your Test' '$(Build.SourcesDirectory)\[YourProjectName]\tests\.'
+          robot -x 'outputx.xml' -t 'Vointy Test' '$(Build.SourcesDirectory)\Vointy_project\rf_vointy\.'
           failOnStderr: true
         displayName: 'Run Robot Framework Tests'
         continueOnError: true

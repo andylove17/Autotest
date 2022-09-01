@@ -15,7 +15,7 @@ jobs:
     steps:
       resources:
         - repo: self
-        clean: true
+          clean: true
       - task: JavaToolInstaller@0
         inputs:
           versionSpec: '11'

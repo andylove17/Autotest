@@ -4,7 +4,9 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
   - master
-
+resources:
+        - repo: self
+          clean: true
 jobs:
   - job: Phase_1
     timeoutInMinutes: 25
@@ -13,9 +15,7 @@ jobs:
     pool:
       vmImage: 'macOS-11'
     steps:
-      resources:
-        - repo: self
-          clean: true
+      
       - task: JavaToolInstaller@0
         inputs:
           versionSpec: '11'
@@ -27,7 +27,7 @@ jobs:
           mode: 'auto'
           channel:  'stable'
           version: 'latest'
-      - checkout self
+      - checkout: self
       - task: FlutterBuild@0
         inputs:
           target: apk

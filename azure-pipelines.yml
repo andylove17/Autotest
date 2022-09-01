@@ -60,8 +60,8 @@ jobs:
           echo "Emulator started"
         displayName: 'Create and start emulator'
         ####copy.apk file to target robotframework's folder.
-      - task: CopyFiles@2
-        inputs:
+      #- task: CopyFiles@2
+      #  inputs:
 
 
       - task: UsePythonVersion@0
